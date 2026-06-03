@@ -3,330 +3,326 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>午餐救星 🍱 | 唔使再煩今日食乜</title>
+<title>午餐救星 🍱 | 20秒幫你決定食乜</title>
 <style>
   :root {
-    --bg: #0f1115;
-    --card: #1a1d24;
-    --card-2: #232730;
-    --accent: #ff7a59;
-    --accent-2: #ffb84d;
-    --text: #f5f6f8;
-    --muted: #9aa0ab;
-    --good: #4caf78;
-    --border: #2c313c;
+    --brand: #ffc60a;        /* 美團黃 */
+    --accent: #ff6000;       /* 橙 */
+    --accent-2: #ff8a1e;
+    --bg: #fff6e9;
+    --card: #ffffff;
+    --text: #2a2723;
+    --muted: #9b9384;
+    --line: #f0e6d6;
+    --good: #29a36a;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
-    background: radial-gradient(1200px 600px at 50% -10%, #20242e 0%, var(--bg) 55%);
+    background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 680px; margin: 0 auto; padding: 24px 18px 80px; }
-  header { text-align: center; margin: 18px 0 28px; }
-  header h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: 0.5px; }
-  header p { color: var(--muted); margin: 0; font-size: 15px; }
+  .hero {
+    background: linear-gradient(135deg, var(--brand) 0%, var(--accent-2) 70%, var(--accent) 100%);
+    padding: 26px 20px 30px; text-align: center;
+    border-radius: 0 0 28px 28px; box-shadow: 0 8px 24px rgba(255,138,30,.25);
+  }
+  .hero h1 { margin: 0; font-size: 28px; color: #fff; letter-spacing: .5px; text-shadow: 0 2px 6px rgba(160,80,0,.25); }
+  .hero p { margin: 6px 0 0; color: #fff; opacity: .95; font-size: 14px; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 18px 16px 96px; }
 
   .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    border: none; cursor: pointer; font-weight: 700; font-size: 16px;
-    color: #1a1206; background: linear-gradient(135deg, var(--accent-2), var(--accent));
-    padding: 16px 22px; border-radius: 16px; width: 100%;
-    box-shadow: 0 8px 24px rgba(255,122,89,0.28); transition: transform .08s ease, opacity .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    border: none; cursor: pointer; font-weight: 800; font-size: 17px; width: 100%;
+    color: #fff; background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    padding: 16px 20px; border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(255,96,0,.28); transition: transform .08s;
   }
-  .btn:active { transform: scale(0.98); }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
-  .btn.ghost {
-    background: var(--card-2); color: var(--text); box-shadow: none;
-    border: 1px solid var(--border);
-  }
+  .btn:active { transform: scale(.97); }
+  .btn:disabled { background: #e7ddcc; color: #b8ac98; box-shadow: none; cursor: not-allowed; }
+  .btn.ghost { background: #fff; color: var(--accent); border: 1.5px solid #ffd9b8; box-shadow: none; }
 
-  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 18px; margin-top: 18px; }
+  .card { background: var(--card); border-radius: 20px; padding: 18px; box-shadow: 0 6px 18px rgba(180,140,80,.10); }
+  .section-t { font-size: 15px; font-weight: 800; margin: 4px 0 12px; display: flex; align-items: center; gap: 6px; }
 
-  .toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
-  .toolbar label { font-size: 13px; color: var(--muted); }
-  select, input[type=range] { accent-color: var(--accent); }
-  select {
-    background: var(--card-2); color: var(--text); border: 1px solid var(--border);
-    border-radius: 10px; padding: 8px 10px; font-size: 14px;
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    border: 1.5px solid var(--line); background: #fff; color: var(--text);
+    padding: 9px 14px; border-radius: 99px; font-size: 14px; cursor: pointer; font-weight: 600;
+    transition: .12s; white-space: nowrap;
   }
-  .count { margin-left: auto; font-size: 13px; color: var(--muted); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: 0 4px 10px rgba(255,96,0,.25); }
 
-  .list { display: flex; flex-direction: column; gap: 10px; max-height: 52vh; overflow-y: auto; padding-right: 4px; }
-  .item {
-    display: flex; align-items: center; gap: 12px; background: var(--card-2);
-    border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; cursor: pointer;
-    transition: border-color .15s, background .15s;
-  }
-  .item.on { border-color: var(--accent); }
-  .item .check {
-    width: 24px; height: 24px; border-radius: 8px; border: 2px solid var(--border);
-    flex: 0 0 auto; display: grid; place-items: center; font-size: 14px; color: #1a1206;
-    background: transparent; transition: .15s;
-  }
-  .item.on .check { background: var(--accent); border-color: var(--accent); }
-  .item .info { min-width: 0; }
-  .item .name { font-weight: 600; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .item .meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .count-bar { text-align: center; margin: 18px 0 6px; font-size: 15px; color: var(--muted); }
+  .count-bar b { color: var(--accent); font-size: 26px; vertical-align: -2px; }
 
-  .hint { text-align: center; color: var(--muted); font-size: 14px; padding: 30px 10px; line-height: 1.7; }
-  .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; margin: 0 auto 14px; animation: spin 1s linear infinite; }
+  .hint { text-align: center; color: var(--muted); padding: 40px 16px; line-height: 1.8; }
+  .spinner { width: 42px; height: 42px; border: 4px solid #ffe6c8; border-top-color: var(--accent); border-radius: 50%; margin: 0 auto 16px; animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .err { color: #c0392b; background: #fff0ec; border: 1px solid #ffd3c6; border-radius: 14px; padding: 16px; line-height: 1.7; }
 
-  .sticky { position: fixed; left: 0; right: 0; bottom: 0; padding: 14px 18px calc(14px + env(safe-area-inset-bottom)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
-  .sticky .inner { max-width: 680px; margin: 0 auto; }
+  .sticky { position: fixed; left: 0; right: 0; bottom: 0; padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); background: linear-gradient(to top, var(--bg) 72%, transparent); }
+  .sticky .inner { max-width: 560px; margin: 0 auto; }
 
-  /* Tournament */
-  .arena { text-align: center; padding-top: 10px; }
-  .arena .round { color: var(--muted); font-size: 14px; margin-bottom: 4px; }
-  .arena .progress { height: 6px; background: var(--card-2); border-radius: 99px; overflow: hidden; margin: 10px auto 22px; max-width: 320px; }
-  .arena .progress > div { height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); transition: width .3s; }
-  .vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: stretch; }
-  .pick {
-    background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 26px 14px;
-    cursor: pointer; transition: transform .1s, border-color .15s; display: flex; flex-direction: column; justify-content: center; min-height: 150px;
-  }
-  .pick:active { transform: scale(0.97); }
-  .pick:hover { border-color: var(--accent); }
-  .pick .n { font-size: 20px; font-weight: 800; }
-  .pick .m { font-size: 12px; color: var(--muted); margin-top: 6px; }
-  .vs .mid { display: grid; place-items: center; font-weight: 900; color: var(--accent); font-size: 18px; }
+  /* 老虎機 / 結果卡 */
+  .slot { perspective: 800px; }
+  .rcard { background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 12px 30px rgba(180,120,40,.18); }
+  .rcard .photo { position: relative; height: 190px; background: linear-gradient(135deg, var(--brand), var(--accent-2)); display: grid; place-items: center; }
+  .rcard .photo .emoji { font-size: 76px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+  .rcard .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .35s; }
+  .rcard .photo img.show { opacity: 1; }
+  .rcard .body { padding: 16px 18px 18px; }
+  .rcard .rname { font-size: 23px; font-weight: 900; }
+  .rcard .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag { background: #fff4e6; color: #b85a00; font-size: 13px; font-weight: 700; padding: 5px 10px; border-radius: 8px; }
+  .tag.dist { background: #e9f7ef; color: var(--good); }
+  .rcard .extra { margin-top: 12px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .rcard .extra a { color: var(--accent); text-decoration: none; }
+  @keyframes flash { 0% { opacity: .35; transform: translateY(6px) scale(.99); } 100% { opacity: 1; transform: none; } }
+  .flashing { animation: flash .09s ease; }
+  @keyframes landpop { 0% { transform: scale(.9); } 60% { transform: scale(1.03); } 100% { transform: scale(1); } }
+  .landed { animation: landpop .4s ease; }
 
-  /* Winner */
-  .winner { text-align: center; padding: 24px 10px; }
-  .winner .crown { font-size: 50px; animation: pop .5s ease; }
-  @keyframes pop { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
-  .winner .wname { font-size: 34px; font-weight: 900; margin: 10px 0 6px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .winner .wmeta { color: var(--muted); margin-bottom: 22px; }
-  .winner .actions { display: flex; flex-direction: column; gap: 10px; }
-  a.maplink { text-decoration: none; }
-  .err { color: #ff8a80; background: #2a1a1a; border: 1px solid #4a2a2a; border-radius: 12px; padding: 14px; font-size: 14px; margin-top: 14px; }
+  .result-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .result-actions .full { grid-column: 1 / -1; }
+
+  .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 50; }
+  .confetti i { position: absolute; top: -10px; font-size: 18px; animation: fall linear forwards; }
+  @keyframes fall { to { transform: translateY(110vh) rotate(540deg); opacity: 0; } }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
+  <div class="hero">
     <h1>🍱 午餐救星</h1>
-    <p>唔使再問同學「今日食乜」</p>
-  </header>
-
-  <div id="screen"></div>
-</div>
+    <p>唔使再諗，20 秒幫你決定食乜</p>
+  </div>
+  <div class="wrap"><div id="screen"></div></div>
 
 <script>
 const $ = (s, el=document) => el.querySelector(s);
 const screen = $('#screen');
-let restaurants = [];   // all fetched {name, lat, lon, cuisine, dist, type}
-let userPos = null;
+let restaurants = [], userPos = null;
+let filters = { maxDist: Infinity, types: new Set(), cuisines: new Set() };
 
-// ---------- Helpers ----------
-function haversine(lat1, lon1, lat2, lon2){
-  const R = 6371000, toR = x => x*Math.PI/180;
-  const dLat = toR(lat2-lat1), dLon = toR(lon2-lon1);
-  const a = Math.sin(dLat/2)**2 + Math.cos(toR(lat1))*Math.cos(toR(lat2))*Math.sin(dLon/2)**2;
-  return 2*R*Math.asin(Math.sqrt(a));
-}
-const fmtDist = m => m < 1000 ? Math.round(m)+' m' : (m/1000).toFixed(1)+' km';
-const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+// ---------- helpers ----------
+function haversine(la1,lo1,la2,lo2){ const R=6371000,r=x=>x*Math.PI/180;
+  const dLa=r(la2-la1),dLo=r(lo2-lo1);
+  const a=Math.sin(dLa/2)**2+Math.cos(r(la1))*Math.cos(r(la2))*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a)); }
+const walkMin = m => Math.max(1, Math.round(m/80));
+const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
 
-const CUISINE_TW = {
-  chinese:'中餐', cantonese:'廣東菜', japanese:'日本料理', sushi:'壽司', ramen:'拉麵',
-  korean:'韓式', thai:'泰式', italian:'意式', pizza:'薄餅', burger:'漢堡',
-  american:'美式', french:'法式', vietnamese:'越式', indian:'印度菜', coffee_shop:'咖啡',
-  cafe:'咖啡店', noodle:'麵食', dumpling:'餃子', seafood:'海鮮', vegetarian:'素食',
-  fast_food:'快餐', dessert:'甜品', bakery:'麵包', bbq:'燒烤', hotpot:'火鍋',
+const CU = {
+  chinese:['中餐','🥢','chinese food'], cantonese:['廣東菜','🥡','dim sum'], dim_sum:['點心','🥟','dim sum'],
+  japanese:['日本菜','🍣','sushi'], sushi:['壽司','🍣','sushi'], ramen:['拉麵','🍜','ramen'],
+  korean:['韓式','🍲','korean food'], thai:['泰式','🍛','thai food'], italian:['意式','🍝','pasta'],
+  pizza:['薄餅','🍕','pizza'], burger:['漢堡','🍔','burger'], american:['美式','🍔','burger'],
+  french:['法式','🥐','french food'], vietnamese:['越式','🍜','pho'], indian:['印度菜','🍛','curry'],
+  noodle:['麵食','🍜','noodles'], dumpling:['餃子','🥟','dumplings'], seafood:['海鮮','🦐','seafood'],
+  vegetarian:['素食','🥗','salad'], dessert:['甜品','🍰','dessert'], ice_cream:['雪糕','🍦','ice cream'],
+  bakery:['麵包','🥖','bakery'], bbq:['燒烤','🍖','barbecue'], hotpot:['火鍋','🍲','hotpot'],
+  coffee_shop:['咖啡','☕','coffee'], cafe:['咖啡','☕','coffee'], breakfast:['早餐','🍳','breakfast'],
+  steak_house:['扒房','🥩','steak'], chicken:['炸雞','🍗','fried chicken'], sandwich:['三文治','🥪','sandwich'],
 };
-function cuisineLabel(raw){
-  if(!raw) return '';
-  return raw.split(';').map(c => CUISINE_TW[c.trim()] || c.trim()).join('・');
-}
-const TYPE_TW = { restaurant:'🍽️ 餐廳', fast_food:'🍔 快餐', cafe:'☕ 咖啡店' };
+const TYPE = { restaurant:['🍽️ 餐廳','food'], fast_food:['🍔 快餐','fast food'], cafe:['☕ 咖啡店','coffee'] };
+function cuLabel(tok){ return CU[tok] ? CU[tok][0] : tok; }
+function emojiFor(r){ for(const t of r.cuisines){ if(CU[t]) return CU[t][1]; } return r.type==='cafe'?'☕':r.type==='fast_food'?'🍟':'🍽️'; }
+function photoKw(r){ for(const t of r.cuisines){ if(CU[t]) return CU[t][2]; } return (TYPE[r.type]||['','food'])[1]; }
 
-// ---------- Screens ----------
+// ---------- screens ----------
 function renderStart(){
   screen.innerHTML = `
-    <div class="hint" style="padding:10px 6px 22px;">
-      撳一下，自動搵晒你身邊嘅餐廳<br>然後幫你玩一場「二選一淘汰賽」決定食乜 😎
+    <div class="hint" style="padding:24px 10px 28px">
+      撳一下，自動搵晒你身邊嘅餐廳<br>
+      再幫你抽一間出嚟，唔使再揀到頭痛 😎
     </div>
-    <button class="btn" id="go">📍 搵附近餐廳</button>
+    <button class="btn" id="go">📍 開始！搵附近餐廳</button>
     <div id="msg"></div>`;
   $('#go').onclick = locate;
 }
 
 function locate(){
-  const msg = $('#msg');
-  if(!navigator.geolocation){ msg.innerHTML = `<div class="err">你部裝置唔支援定位 😢</div>`; return; }
-  screen.innerHTML = `<div class="hint"><div class="spinner"></div>緊係攞緊你嘅位置…<br><span style="font-size:12px">（瀏覽器問准許嘅話，撳「允許」）</span></div>`;
+  if(!navigator.geolocation){ screen.innerHTML = `<div class="err">你部裝置唔支援定位 😢</div>`; return; }
+  screen.innerHTML = `<div class="hint"><div class="spinner"></div>緊係攞緊你嘅位置…<br><span style="font-size:12px">（瀏覽器問准許就撳「允許」）</span></div>`;
   navigator.geolocation.getCurrentPosition(
-    pos => { userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude }; fetchRestaurants(2000); },
-    err => {
-      const reason = err.code === 1 ? '你拒絕咗定位權限。請喺瀏覽器設定度允許位置，再試多次。' : '攞唔到位置，請試多次。';
-      screen.innerHTML = `<div class="err">${reason}</div>`;
-      const b = document.createElement('button'); b.className='btn ghost'; b.textContent='⬅️ 返去重試'; b.style.marginTop='14px'; b.onclick=renderStart; screen.appendChild(b);
+    p => { userPos = { lat:p.coords.latitude, lon:p.coords.longitude }; fetchRestaurants(1200); },
+    e => {
+      screen.innerHTML = `<div class="err">${e.code===1?'你拒絕咗定位權限，請喺瀏覽器設定允許位置再試。':'攞唔到位置，請再試一次。'}</div>`;
+      const b=document.createElement('button'); b.className='btn ghost'; b.textContent='🔄 重試'; b.style.marginTop='14px'; b.onclick=renderStart; screen.appendChild(b);
     },
     { enableHighAccuracy:true, timeout:10000, maximumAge:60000 }
   );
 }
 
 async function fetchRestaurants(radius){
-  let elapsed = 0;
-  const loadingTimer = setInterval(() => {
-    elapsed += 1;
-    const tip = elapsed > 8 ? '<br><span style="font-size:12px;color:#ff8a80">伺服器較慢，再等多幾秒…</span>' : '';
-    const el = document.getElementById('loading-hint');
-    if(el) el.innerHTML = `緊係搵緊 ${radius/1000} km 範圍內嘅餐廳…${tip}`;
-  }, 1000);
-  screen.innerHTML = `<div class="hint"><div class="spinner"></div><span id="loading-hint">緊係搵緊 ${radius/1000} km 範圍內嘅餐廳…</span></div>`;
+  let sec=0; const t=setInterval(()=>{ sec++; const el=$('#lh'); if(el&&sec>8) el.innerHTML='搵緊餐廳…伺服器有少少慢，再等等 🙏'; },1000);
+  screen.innerHTML = `<div class="hint"><div class="spinner"></div><span id="lh">緊係搵緊你身邊嘅餐廳…</span></div>`;
   const q = `[out:json][timeout:25];(
     node["amenity"~"^(restaurant|fast_food|cafe)$"](around:${radius},${userPos.lat},${userPos.lon});
     way["amenity"~"^(restaurant|fast_food|cafe)$"](around:${radius},${userPos.lat},${userPos.lon});
   );out center tags;`;
-  const endpoints = [
-    'https://overpass-api.de/api/interpreter',
-    'https://overpass.kumi.systems/api/interpreter',
-  ];
-  let data = null, lastErr = null;
-  for(const url of endpoints){
+  const eps = ['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+  let data=null, err=null;
+  for(const url of eps){
     try {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 12000);
-      const res = await fetch(url, { method:'POST', body: 'data='+encodeURIComponent(q), signal: ctrl.signal });
-      clearTimeout(timer);
+      const c=new AbortController(); const tm=setTimeout(()=>c.abort(),12000);
+      const res=await fetch(url,{method:'POST',body:'data='+encodeURIComponent(q),signal:c.signal}); clearTimeout(tm);
       if(!res.ok) throw new Error('HTTP '+res.status);
-      data = await res.json(); break;
-    } catch(e){ lastErr = e; }
+      data=await res.json(); break;
+    } catch(e){ err=e; }
   }
-  clearInterval(loadingTimer);
+  clearInterval(t);
   if(!data){
-    screen.innerHTML = `<div class="err">⚠️ 搵唔到餐廳資料，可能係網絡太慢或地圖伺服器繁忙。<br><br>請撳下面「重試」按鈕再試一次。</div>`;
-    const b = document.createElement('button'); b.className='btn'; b.textContent='🔄 重試'; b.style.marginTop='14px'; b.onclick=()=>fetchRestaurants(radius); screen.appendChild(b);
-    return;
+    screen.innerHTML = `<div class="err">⚠️ 搵唔到餐廳資料，可能網絡慢或地圖伺服器繁忙，撳下面重試。</div>`;
+    const b=document.createElement('button'); b.className='btn'; b.textContent='🔄 重試'; b.style.marginTop='14px'; b.onclick=()=>fetchRestaurants(radius); screen.appendChild(b); return;
   }
-  const seen = new Set();
-  restaurants = data.elements.map(el => {
-    const t = el.tags || {};
-    const lat = el.lat ?? el.center?.lat, lon = el.lon ?? el.center?.lon;
-    if(!t.name || lat==null) return null;
-    return { name: t.name, lat, lon, type: t.amenity, cuisine: cuisineLabel(t.cuisine),
-             dist: haversine(userPos.lat, userPos.lon, lat, lon) };
-  }).filter(Boolean).filter(r => { if(seen.has(r.name)) return false; seen.add(r.name); return true; })
-    .sort((a,b)=>a.dist-b.dist);
+  const seen=new Set();
+  restaurants = data.elements.map(el=>{
+    const tg=el.tags||{}, lat=el.lat??el.center?.lat, lon=el.lon??el.center?.lon;
+    if(!tg.name||lat==null) return null;
+    const cuisines=(tg.cuisine||'').split(';').map(s=>s.trim()).filter(Boolean);
+    return { name:tg.name, lat, lon, type:tg.amenity, cuisines,
+             dist:haversine(userPos.lat,userPos.lon,lat,lon),
+             website:tg.website||tg['contact:website']||'', phone:tg.phone||tg['contact:phone']||'', hours:tg.opening_hours||'' };
+  }).filter(Boolean).filter(r=>{ if(seen.has(r.name))return false; seen.add(r.name); return true; }).sort((a,b)=>a.dist-b.dist);
 
-  if(restaurants.length === 0){
+  if(!restaurants.length){
     screen.innerHTML = `<div class="err">呢頭搵唔到有名嘅餐廳 😅 試下擴大範圍。</div>`;
-    const b = document.createElement('button'); b.className='btn'; b.textContent='🔍 擴大到 5km'; b.style.marginTop='14px'; b.onclick=()=>fetchRestaurants(5000); screen.appendChild(b);
-    return;
+    const b=document.createElement('button'); b.className='btn'; b.textContent='🔍 擴大到 3km'; b.style.marginTop='14px'; b.onclick=()=>fetchRestaurants(3000); screen.appendChild(b); return;
   }
-  restaurants.forEach(r => r.on = true);
-  renderList();
+  filters = { maxDist: Infinity, types:new Set(), cuisines:new Set() };
+  renderFunnel();
 }
 
-let radiusFilter = 99999;
-function renderList(){
-  const visible = restaurants.filter(r => r.dist <= radiusFilter);
-  const onCount = visible.filter(r=>r.on).length;
-  screen.innerHTML = `
-    <div class="panel">
-      <div class="toolbar">
-        <label>範圍
-          <select id="rad">
-            <option value="500">500 m</option>
-            <option value="1000">1 km</option>
-            <option value="99999" selected>全部</option>
-          </select>
-        </label>
-        <button class="btn ghost" id="all" style="width:auto;padding:8px 12px;font-size:13px">全選</button>
-        <button class="btn ghost" id="none" style="width:auto;padding:8px 12px;font-size:13px">全唔要</button>
-        <span class="count"><b id="oc">${onCount}</b> / ${visible.length} 間</span>
-      </div>
-      <div class="list" id="list"></div>
-    </div>`;
-  const list = $('#list');
-  visible.forEach((r) => {
-    const div = document.createElement('div');
-    div.className = 'item' + (r.on ? ' on':'');
-    div.innerHTML = `<div class="check">✓</div>
-      <div class="info">
-        <div class="name">${r.name}</div>
-        <div class="meta">${TYPE_TW[r.type]||'🍽️'}　${fmtDist(r.dist)}${r.cuisine? '　'+r.cuisine : ''}</div>
-      </div>`;
-    div.onclick = () => { r.on = !r.on; div.classList.toggle('on', r.on); $('#oc').textContent = visible.filter(x=>x.on).length; };
-    list.appendChild(div);
-  });
-  $('#rad').value = String(radiusFilter);
-  $('#rad').onchange = e => { radiusFilter = +e.target.value; renderList(); };
-  $('#all').onclick = () => { visible.forEach(r=>r.on=true); renderList(); };
-  $('#none').onclick = () => { visible.forEach(r=>r.on=false); renderList(); };
+function applyFilters(){
+  return restaurants.filter(r =>
+    r.dist <= filters.maxDist &&
+    (filters.types.size===0 || filters.types.has(r.type)) &&
+    (filters.cuisines.size===0 || r.cuisines.some(c=>filters.cuisines.has(c)))
+  );
+}
 
-  // sticky CTA
-  const old = $('.sticky'); if(old) old.remove();
-  const bar = document.createElement('div');
-  bar.className = 'sticky';
-  bar.innerHTML = `<div class="inner"><button class="btn" id="start">⚔️ 開始淘汰賽（${onCount} 間）</button></div>`;
+function renderFunnel(){
+  // 統計菜式（取最常見幾種）
+  const freq={}; restaurants.forEach(r=>r.cuisines.forEach(c=>{ if(CU[c]) freq[c]=(freq[c]||0)+1; }));
+  const topCu = Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).slice(0,10);
+  const typeSet = new Set(restaurants.map(r=>r.type));
+
+  screen.innerHTML = `
+    <div class="card">
+      <div class="section-t">🚶 想行幾遠？</div>
+      <div class="chips" id="dist">
+        <div class="chip" data-d="400">5 分鐘內</div>
+        <div class="chip" data-d="800">10 分鐘內</div>
+        <div class="chip on" data-d="Infinity">唔限</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <div class="section-t">🍽️ 邊種？<span style="font-weight:500;color:var(--muted);font-size:12px">（唔揀＝全部）</span></div>
+      <div class="chips" id="types">
+        ${[...typeSet].map(t=>`<div class="chip" data-t="${t}">${TYPE[t][0]}</div>`).join('')}
+      </div>
+    </div>
+    ${topCu.length?`<div class="card" style="margin-top:14px">
+      <div class="section-t">😋 想食啲乜？<span style="font-weight:500;color:var(--muted);font-size:12px">（可多選 / 唔揀＝全部）</span></div>
+      <div class="chips" id="cu">
+        ${topCu.map(c=>`<div class="chip" data-c="${c}">${CU[c][1]} ${CU[c][0]}</div>`).join('')}
+      </div>
+    </div>`:''}
+    <div class="count-bar">啱條件嘅有 <b id="cnt">0</b> 間</div>`;
+
+  const updateCount=()=>{ const n=applyFilters().length; $('#cnt').textContent=n; const b=$('#spin'); if(b){ b.disabled=n<1; b.textContent=n<1?'😅 冇啱嘅，放寬條件啦':`🎰 開始抽！（${n} 間）`; } };
+
+  $('#dist').onclick=e=>{ const c=e.target.closest('.chip'); if(!c)return;
+    [...$('#dist').children].forEach(x=>x.classList.remove('on')); c.classList.add('on');
+    filters.maxDist = c.dataset.d==='Infinity'?Infinity:+c.dataset.d; updateCount(); };
+  const multi=(wrap,key,attr)=>{ const w=$(wrap); if(!w)return; w.onclick=e=>{ const c=e.target.closest('.chip'); if(!c)return;
+    c.classList.toggle('on'); const v=c.dataset[attr]; filters[key].has(v)?filters[key].delete(v):filters[key].add(v); updateCount(); }; };
+  multi('#types','types','t'); multi('#cu','cuisines','c');
+
+  const old=$('.sticky'); if(old) old.remove();
+  const bar=document.createElement('div'); bar.className='sticky';
+  bar.innerHTML=`<div class="inner"><button class="btn" id="spin">🎰 開始抽！</button></div>`;
   document.body.appendChild(bar);
-  $('#start').onclick = () => {
-    const picked = restaurants.filter(r => r.on && r.dist <= radiusFilter);
-    if(picked.length < 2){ alert('至少要揀 2 間至玩到淘汰賽喎 😅'); return; }
-    bar.remove();
-    startTournament(picked);
-  };
+  $('#spin').onclick=()=>{ const pool=applyFilters(); if(pool.length<1)return; bar.remove(); runSlot(pool); };
+  updateCount();
 }
 
-// ---------- Tournament ----------
-function startTournament(pool){
-  let queue = shuffle([...pool]);
-  let winners = [];
-  let total = pool.length;
-  let decided = 0;
-
-  function next(){
-    if(queue.length === 1 && winners.length === 0){ return showWinner(queue[0]); }
-    if(queue.length === 0){ queue = winners; winners = []; }
-    if(queue.length === 1){ winners.push(queue.shift()); return next(); }
-    const a = queue.shift(), b = queue.shift();
-    renderMatch(a, b);
-  }
-
-  function renderMatch(a, b){
-    const pct = Math.round((decided/(total-1))*100);
-    screen.innerHTML = `
-      <div class="arena">
-        <div class="round">邊個贏？撳一下淘汰另一個</div>
-        <div class="progress"><div style="width:${pct}%"></div></div>
-        <div class="vs">
-          <div class="pick" id="pa"><div class="n">${a.name}</div><div class="m">${TYPE_TW[a.type]||''} ${fmtDist(a.dist)}${a.cuisine?' · '+a.cuisine:''}</div></div>
-          <div class="mid">VS</div>
-          <div class="pick" id="pb"><div class="n">${b.name}</div><div class="m">${TYPE_TW[b.type]||''} ${fmtDist(b.dist)}${b.cuisine?' · '+b.cuisine:''}</div></div>
-        </div>
-        <button class="btn ghost" id="skip" style="margin-top:22px">🎲 唔想揀，幫我隨機決定</button>
-      </div>`;
-    $('#pa').onclick = () => { winners.push(a); decided++; next(); };
-    $('#pb').onclick = () => { winners.push(b); decided++; next(); };
-    $('#skip').onclick = () => { const all=[...queue,a,b,...winners]; showWinner(all[Math.floor(Math.random()*all.length)]); };
-  }
-  next();
-}
-
-function showWinner(r){
-  const old = $('.sticky'); if(old) old.remove();
-  const gmap = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.name)}&query_place_id=`;
-  const gmapGeo = `https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}`;
+// ---------- 老虎機抽獎 ----------
+function runSlot(pool){
+  const old=$('.sticky'); if(old) old.remove();
   screen.innerHTML = `
-    <div class="winner">
-      <div class="crown">👑</div>
-      <div class="wname">${r.name}</div>
-      <div class="wmeta">${TYPE_TW[r.type]||'🍽️'}　${fmtDist(r.dist)}${r.cuisine? '　'+r.cuisine : ''}<br>今日午餐就係佢喇！🎉</div>
-      <div class="actions">
-        <a class="maplink" href="${gmapGeo}" target="_blank"><button class="btn">🗺️ 喺地圖睇位置 / 導航</button></a>
-        <button class="btn ghost" id="again">🔁 唔啱，再嚟一次</button>
-        <button class="btn ghost" id="back">⬅️ 返去改餐廳</button>
+    <div class="slot">
+      <div class="rcard landed" id="rc">
+        <div class="photo"><div class="emoji" id="pe">🍽️</div></div>
+        <div class="body"><div class="rname" id="pn">…</div><div class="tags" id="pt"></div></div>
       </div>
     </div>`;
-  $('#again').onclick = () => { const picked = restaurants.filter(x=>x.on && x.dist<=radiusFilter); startTournament(picked); };
-  $('#back').onclick = renderList;
+  const pe=$('#pe'), pn=$('#pn'), pt=$('#pt'), rc=$('#rc');
+  const order = shuffle([...pool]);
+  let i=0, delay=60, total=0;
+  const target = 1400 + Math.random()*400;
+  function tick(){
+    const r=order[i % order.length]; i++;
+    pe.textContent=emojiFor(r); pn.textContent=r.name;
+    pt.innerHTML=`<span class="tag dist">🚶 約 ${walkMin(r.dist)} 分鐘</span>`;
+    rc.classList.remove('flashing'); void rc.offsetWidth; rc.classList.add('flashing');
+    total += delay;
+    if(total < target){ delay = total > target*0.6 ? delay*1.18 : delay; setTimeout(tick, delay); }
+    else { settle(order[(i-1)%order.length], pool); }
+  }
+  tick();
+}
+
+function settle(r, pool){
+  confetti();
+  showResult(r, pool);
+}
+
+function showResult(r, pool){
+  const kw = encodeURIComponent(photoKw(r));
+  const tags = [`<span class="tag dist">🚶 約 ${walkMin(r.dist)} 分鐘（${r.dist<1000?Math.round(r.dist)+'m':(r.dist/1000).toFixed(1)+'km'}）</span>`,
+    `<span class="tag">${TYPE[r.type][0]}</span>`,
+    ...r.cuisines.filter(c=>CU[c]).slice(0,3).map(c=>`<span class="tag">${CU[c][1]} ${CU[c][0]}</span>`)].join('');
+  let extra='';
+  if(r.hours) extra += `🕒 ${r.hours}<br>`;
+  if(r.phone) extra += `📞 <a href="tel:${r.phone}">${r.phone}</a><br>`;
+  if(r.website) extra += `🔗 <a href="${r.website}" target="_blank">餐廳網站</a>`;
+
+  screen.innerHTML = `
+    <div style="text-align:center;font-weight:800;color:var(--accent);margin:6px 0 12px;font-size:16px">🎉 今日午餐就係佢！</div>
+    <div class="slot"><div class="rcard landed">
+      <div class="photo"><div class="emoji">${emojiFor(r)}</div><img id="ph" alt=""></div>
+      <div class="body">
+        <div class="rname">${r.name}</div>
+        <div class="tags">${tags}</div>
+        ${extra?`<div class="extra">${extra}</div>`:''}
+      </div>
+    </div></div>
+    <div class="result-actions">
+      <button class="btn ghost" id="again">🔁 換一間</button>
+      <a class="full-link" href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}" target="_blank" style="text-decoration:none"><button class="btn" style="width:100%">🗺️ 去導航</button></a>
+      <button class="btn ghost full" id="reset">⚙️ 改返條件</button>
+    </div>`;
+  // 嘗試載入按菜式分類嘅美食相（載唔到就保留 emoji 卡）
+  const img=$('#ph');
+  img.onload=()=>img.classList.add('show');
+  img.onerror=()=>{};
+  img.src=`https://loremflickr.com/600/400/${kw},food?lock=${(Math.random()*1000)|0}`;
+
+  $('#again').onclick=()=>{ const r2=pool[(Math.random()*pool.length)|0]; confetti(8); showResult(r2,pool); };
+  $('#reset').onclick=renderFunnel;
+}
+
+function confetti(n=30){
+  const c=document.createElement('div'); c.className='confetti';
+  const ico=['🎉','🍜','🍣','🍔','🍕','🥟','✨','🍱'];
+  for(let i=0;i<n;i++){ const s=document.createElement('i'); s.textContent=ico[(Math.random()*ico.length)|0];
+    s.style.left=Math.random()*100+'%'; s.style.animationDuration=(1.2+Math.random()*1.2)+'s'; s.style.animationDelay=(Math.random()*.3)+'s'; c.appendChild(s); }
+  document.body.appendChild(c); setTimeout(()=>c.remove(),2600);
 }
 
 renderStart();
