@@ -172,7 +172,14 @@ function locate(){
 }
 
 async function fetchRestaurants(radius){
-  screen.innerHTML = `<div class="hint"><div class="spinner"></div>緊係搵緊 ${radius/1000} km 範圍內嘅餐廳…</div>`;
+  let elapsed = 0;
+  const loadingTimer = setInterval(() => {
+    elapsed += 1;
+    const tip = elapsed > 8 ? '<br><span style="font-size:12px;color:#ff8a80">伺服器較慢，再等多幾秒…</span>' : '';
+    const el = document.getElementById('loading-hint');
+    if(el) el.innerHTML = `緊係搵緊 ${radius/1000} km 範圍內嘅餐廳…${tip}`;
+  }, 1000);
+  screen.innerHTML = `<div class="hint"><div class="spinner"></div><span id="loading-hint">緊係搵緊 ${radius/1000} km 範圍內嘅餐廳…</span></div>`;
   const q = `[out:json][timeout:25];(
     node["amenity"~"^(restaurant|fast_food|cafe)$"](around:${radius},${userPos.lat},${userPos.lon});
     way["amenity"~"^(restaurant|fast_food|cafe)$"](around:${radius},${userPos.lat},${userPos.lon});
@@ -184,14 +191,18 @@ async function fetchRestaurants(radius){
   let data = null, lastErr = null;
   for(const url of endpoints){
     try {
-      const res = await fetch(url, { method:'POST', body: 'data='+encodeURIComponent(q) });
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 12000);
+      const res = await fetch(url, { method:'POST', body: 'data='+encodeURIComponent(q), signal: ctrl.signal });
+      clearTimeout(timer);
       if(!res.ok) throw new Error('HTTP '+res.status);
       data = await res.json(); break;
     } catch(e){ lastErr = e; }
   }
+  clearInterval(loadingTimer);
   if(!data){
-    screen.innerHTML = `<div class="err">攞餐廳資料失敗（${lastErr?.message||'網絡問題'}）。試下行去人多啲嘅地方再試，或者撳重試。</div>`;
-    const b = document.createElement('button'); b.className='btn ghost'; b.textContent='⬅️ 重試'; b.style.marginTop='14px'; b.onclick=()=>fetchRestaurants(radius); screen.appendChild(b);
+    screen.innerHTML = `<div class="err">⚠️ 搵唔到餐廳資料，可能係網絡太慢或地圖伺服器繁忙。<br><br>請撳下面「重試」按鈕再試一次。</div>`;
+    const b = document.createElement('button'); b.className='btn'; b.textContent='🔄 重試'; b.style.marginTop='14px'; b.onclick=()=>fetchRestaurants(radius); screen.appendChild(b);
     return;
   }
   const seen = new Set();
