@@ -2,299 +2,622 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<meta name="theme-color" content="#fffdfb" />
-<title>午餐運勢 🔮 | 天選你今日食乜</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0e1a2b" />
+<title>財審 AI · 派款前財務核實</title>
 <style>
   :root{
-    --bg:#fffdfb; --card:#ffffff; --ink:#241f1c; --muted:#9a948c; --line:#f1ece5;
-    --c1:#ff5a5f; --c2:#ff8a5b;           /* 珊瑚→橘紅，柔啲唔焦 */
-    --gold:#e8b007; --plum1:#3a2342; --plum2:#5b2742;
+    --bg:#0e1a2b; --panel:#0f2036; --card:#ffffff; --ink:#17202b; --sub:#6b7787;
+    --line:#e7ecf2; --soft:#f4f7fb; --brand:#2f6df0; --brand2:#00b3a4;
+    --ok:#12a150; --okbg:#e8f7ef; --warn:#c98a00; --warnbg:#fdf3e0; --bad:#e0364f; --badbg:#fdeef0;
+    --ring:#eef2f7;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;}
   body{font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;
-    background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
-  .wrap{max-width:540px;margin:0 auto;padding:22px 18px 100px;}
-  .top{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 18px;}
-  .top h1{font-size:21px;margin:0;font-weight:900;letter-spacing:.5px;}
-  .top .badge{font-size:11px;color:var(--c1);border:1px solid #ffd5d2;background:#fff3f2;padding:3px 8px;border-radius:99px;font-weight:700;}
+    background:linear-gradient(180deg,#0e1a2b 0,#0e1a2b 240px,#eef2f7 240px,#eef2f7 100%);
+    color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:660px;margin:0 auto;padding:20px 16px 90px;}
 
-  /* 運勢籤文卡 */
-  .fortune{position:relative;border-radius:24px;overflow:hidden;
-    background:linear-gradient(150deg,var(--plum1),var(--plum2));color:#fff;
-    padding:22px 20px;box-shadow:0 16px 36px rgba(58,35,66,.32);}
-  .fortune::before{content:"";position:absolute;inset:0;background:
-    radial-gradient(120px 120px at 85% 12%,rgba(232,176,7,.28),transparent 70%);}
-  .fortune .lvl{font-size:13px;color:var(--gold);font-weight:800;letter-spacing:2px;}
-  .fortune .lvl b{font-size:34px;display:block;margin-top:2px;color:#fff;letter-spacing:4px;
-    text-shadow:0 2px 10px rgba(232,176,7,.4);}
-  .fortune .stars{color:var(--gold);letter-spacing:3px;margin-top:4px;font-size:14px;}
-  .yj{display:flex;gap:12px;margin-top:18px;}
-  .yj .box{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
-    border-radius:14px;padding:12px;}
-  .yj .h{font-size:12px;opacity:.8;margin-bottom:6px;}
-  .yj .v{font-size:16px;font-weight:800;line-height:1.4;}
-  .yj .yi .h{color:#ffd98a;} .yj .ji .h{color:#ff9a9a;}
-  .lucky{margin-top:16px;font-size:14px;background:rgba(232,176,7,.16);border:1px dashed rgba(232,176,7,.5);
-    border-radius:12px;padding:11px 14px;}
-  .lucky b{color:var(--gold);}
+  /* 頂部 */
+  .head{color:#fff;padding:6px 2px 16px;}
+  .head .kick{font-size:12px;letter-spacing:2px;color:#8fd6cf;font-weight:800;}
+  .head h1{font-size:24px;margin:6px 0 6px;font-weight:900;letter-spacing:.5px;}
+  .head p{margin:0;color:#b9c6d6;font-size:13px;line-height:1.6;}
+
+  /* 步驟條 */
+  .steps{display:flex;gap:8px;margin:16px 0 4px;}
+  .steps .s{flex:1;text-align:center;color:#7f8ea1;font-size:12px;font-weight:700;}
+  .steps .s .dot{width:26px;height:26px;border-radius:50%;background:#20344c;color:#8ea3ba;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 6px;font-weight:800;
+    border:2px solid transparent;transition:.2s;}
+  .steps .s.on .dot{background:#fff;color:var(--brand);border-color:var(--brand2);}
+  .steps .s.on{color:#fff;}
+  .steps .s.done .dot{background:var(--brand2);color:#fff;}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;
+    box-shadow:0 10px 30px rgba(14,26,43,.10);margin-top:14px;}
+  .card h2{font-size:16px;margin:0 0 4px;font-weight:900;}
+  .card .hint{font-size:12px;color:var(--sub);margin:0 0 14px;line-height:1.6;}
+  .sect-t{font-size:13px;font-weight:900;color:var(--ink);margin:18px 0 10px;
+    display:flex;align-items:center;gap:8px;}
+  .sect-t::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--brand);}
+
+  label.f{display:block;margin:0 0 12px;}
+  label.f .lb{font-size:12.5px;font-weight:700;color:#3c4657;margin-bottom:6px;display:block;}
+  label.f .lb small{color:var(--sub);font-weight:500;}
+  input,select{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:12px;
+    padding:12px 13px;font-size:15px;color:var(--ink);font-family:inherit;outline:none;transition:.15s;}
+  input:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(47,109,240,.12);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .grid2 label.f{margin-bottom:2px;}
+  .suffix{position:relative;}
+  .suffix .u{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--sub);font-size:12px;font-weight:700;}
+
+  /* 上傳位 */
+  .drop{border:1.6px dashed #c7d2e0;border-radius:14px;padding:13px 14px;display:flex;align-items:center;
+    gap:12px;cursor:pointer;background:var(--soft);transition:.15s;margin-bottom:10px;}
+  .drop:hover{border-color:var(--brand);background:#f2f6ff;}
+  .drop.filled{border-style:solid;border-color:var(--brand2);background:#e9fbf8;}
+  .drop .ic{width:38px;height:38px;border-radius:10px;background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:19px;flex:0 0 auto;}
+  .drop .tt{flex:1;min-width:0;}
+  .drop .tt b{font-size:13.5px;display:block;}
+  .drop .tt span{font-size:11.5px;color:var(--sub);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .drop .st{font-size:11px;font-weight:800;color:#a9b4c2;flex:0 0 auto;}
+  .drop.filled .st{color:var(--brand2);}
+  .drop input[type=file]{display:none;}
 
   .btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;cursor:pointer;
-    font-weight:800;font-size:17px;width:100%;color:#fff;
-    background:linear-gradient(135deg,var(--c2),var(--c1));padding:17px 20px;border-radius:16px;
-    box-shadow:0 10px 22px rgba(255,90,95,.30);transition:transform .08s;}
-  .btn:active{transform:scale(.97);}
-  .btn:disabled{background:#eee6dc;color:#bcae9c;box-shadow:none;}
-  .btn.ghost{background:#fff;color:var(--c1);border:1.5px solid #ffd5d2;box-shadow:none;}
-  .btn.big{margin-top:18px;font-size:18px;padding:18px;}
+    font-weight:900;font-size:16px;width:100%;color:#fff;font-family:inherit;
+    background:linear-gradient(135deg,var(--brand),#2456c7);padding:16px;border-radius:14px;
+    box-shadow:0 10px 22px rgba(47,109,240,.30);transition:transform .08s;margin-top:6px;}
+  .btn:active{transform:scale(.98);}
+  .btn.ghost{background:#fff;color:var(--brand);border:1.5px solid #cfdcf5;box-shadow:none;}
+  .btn.mini{font-size:13px;padding:10px 14px;width:auto;box-shadow:none;}
+  .row-btns{display:flex;gap:10px;align-items:center;margin-top:12px;}
 
-  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;
-    box-shadow:0 8px 22px rgba(180,150,110,.08);}
-  .sect{font-size:15px;font-weight:800;margin:2px 0 12px;}
-  .sect span{font-weight:500;color:var(--muted);font-size:12px;}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;}
-  .chip{border:1.5px solid var(--line);background:#fff;color:var(--ink);padding:9px 14px;border-radius:99px;
-    font-size:14px;cursor:pointer;font-weight:700;transition:.12s;}
-  .chip.on{background:var(--c1);border-color:var(--c1);color:#fff;box-shadow:0 4px 10px rgba(255,90,95,.25);}
+  .hide{display:none!important;}
 
-  .cnt{text-align:center;margin:18px 0 4px;color:var(--muted);font-size:15px;}
-  .cnt b{color:var(--c1);font-size:26px;vertical-align:-2px;}
+  /* 分析中 */
+  .analyzing{text-align:center;padding:8px 4px 4px;}
+  .analyzing .spin{width:70px;height:70px;margin:6px auto 16px;border-radius:50%;
+    border:6px solid #e7ecf2;border-top-color:var(--brand);animation:sp 1s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .loglist{text-align:left;margin:10px 0 0;padding:0;list-style:none;}
+  .loglist li{display:flex;align-items:center;gap:10px;padding:9px 4px;font-size:13.5px;color:#93a0b0;
+    border-bottom:1px solid var(--soft);opacity:.4;transition:.25s;}
+  .loglist li.act{opacity:1;color:var(--ink);font-weight:700;}
+  .loglist li.fin{opacity:1;color:var(--ink);}
+  .loglist li .tick{width:22px;height:22px;border-radius:50%;background:var(--soft);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;font-size:12px;color:#b7c1cf;}
+  .loglist li.fin .tick{background:var(--okbg);color:var(--ok);}
+  .loglist li.act .tick{background:#e6efff;color:var(--brand);}
 
-  .hint{text-align:center;color:var(--muted);padding:38px 16px;line-height:1.8;}
-  .spinner{width:42px;height:42px;border:4px solid #ffe2e0;border-top-color:var(--c1);border-radius:50%;
-    margin:0 auto 16px;animation:spin 1s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .err{color:#c0392b;background:#fff0ec;border:1px solid #ffd3c6;border-radius:14px;padding:16px;line-height:1.7;}
+  /* 結果 */
+  .verdict{border-radius:18px;padding:20px;text-align:center;color:#fff;position:relative;overflow:hidden;}
+  .verdict.ok{background:linear-gradient(140deg,#12a150,#0c7f5f);}
+  .verdict.warn{background:linear-gradient(140deg,#e0a11a,#c9770a);}
+  .verdict.bad{background:linear-gradient(140deg,#e0364f,#a51d3f);}
+  .ring{width:132px;height:132px;margin:2px auto 10px;position:relative;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring .num b{font-size:40px;font-weight:900;line-height:1;}
+  .ring .num small{font-size:11px;opacity:.85;letter-spacing:1px;margin-top:3px;}
+  .verdict .vlabel{font-size:22px;font-weight:900;letter-spacing:1px;}
+  .verdict .vsub{font-size:13px;opacity:.92;margin-top:6px;line-height:1.6;}
+  .payout{display:flex;gap:10px;margin-top:14px;}
+  .payout .b{flex:1;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+    border-radius:12px;padding:11px;}
+  .payout .b .h{font-size:11px;opacity:.85;margin-bottom:4px;}
+  .payout .b .v{font-size:17px;font-weight:900;}
 
-  .sticky{position:fixed;left:0;right:0;bottom:0;padding:14px 18px calc(14px + env(safe-area-inset-bottom));
-    background:linear-gradient(to top,var(--bg) 72%,transparent);}
-  .sticky .inner{max-width:540px;margin:0 auto;}
+  .modu{border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-top:10px;}
+  .modu .top{display:flex;align-items:center;gap:10px;}
+  .modu .top .t{flex:1;font-size:14px;font-weight:800;}
+  .pill{font-size:11px;font-weight:900;padding:3px 9px;border-radius:99px;flex:0 0 auto;}
+  .pill.pass{background:var(--okbg);color:var(--ok);}
+  .pill.warn{background:var(--warnbg);color:var(--warn);}
+  .pill.fail{background:var(--badbg);color:var(--bad);}
+  .modu .sc{font-size:12px;color:var(--sub);font-weight:800;flex:0 0 auto;}
+  .bar{height:7px;border-radius:99px;background:var(--ring);margin:10px 0 8px;overflow:hidden;}
+  .bar > i{display:block;height:100%;border-radius:99px;transition:width .6s;}
+  .modu .dt{font-size:12.5px;color:#57616f;line-height:1.65;margin:0;}
 
-  /* 結果卡 */
-  .reveal-t{text-align:center;font-weight:900;font-size:18px;margin:4px 0 14px;
-    background:linear-gradient(135deg,var(--gold),var(--c1));-webkit-background-clip:text;background-clip:text;color:transparent;}
-  .rcard{background:#fff;border-radius:24px;overflow:hidden;border:1px solid var(--line);
-    box-shadow:0 16px 34px rgba(180,120,60,.16);}
-  .rcard .photo{position:relative;height:200px;background:linear-gradient(135deg,var(--c2),var(--c1));
-    display:grid;place-items:center;}
-  .rcard .photo .emoji{font-size:80px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
-  .rcard .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s;}
-  .rcard .photo img.show{opacity:1;}
-  .rcard .body{padding:16px 18px 18px;}
-  .rcard .rname{font-size:24px;font-weight:900;}
-  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
-  .tag{background:#fff1ee;color:#d1483f;font-size:13px;font-weight:700;padding:5px 10px;border-radius:8px;}
-  .tag.dist{background:#eaf7ef;color:#1f9d57;}
-  .extra{margin-top:12px;font-size:13px;color:var(--muted);line-height:1.7;}
-  .extra a{color:var(--c1);text-decoration:none;}
-  @keyframes flash{0%{opacity:.3;transform:translateY(8px) scale(.98);}100%{opacity:1;transform:none;}}
-  .flashing{animation:flash .09s ease;}
-  @keyframes pop{0%{transform:scale(.9);}60%{transform:scale(1.03);}100%{transform:scale(1);}}
-  .pop{animation:pop .4s ease;}
-  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
-  .actions .full{grid-column:1/-1;}
-  .share-tip{text-align:center;color:var(--muted);font-size:12px;margin-top:12px;}
+  .aicomment{background:linear-gradient(135deg,#0f2036,#173456);color:#e8eefb;border-radius:14px;
+    padding:16px;margin-top:14px;font-size:13.5px;line-height:1.8;}
+  .aicomment .hd{display:flex;align-items:center;gap:8px;font-weight:900;color:#8fd6cf;
+    font-size:12px;letter-spacing:1px;margin-bottom:8px;}
 
-  .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:50;}
-  .confetti i{position:absolute;top:-12px;font-size:20px;animation:fall linear forwards;}
-  @keyframes fall{to{transform:translateY(112vh) rotate(560deg);opacity:0;}}
+  .benford{margin-top:14px;}
+  .bfbars{display:flex;align-items:flex-end;gap:5px;height:90px;margin:12px 0 6px;}
+  .bfcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;}
+  .bfcol .bwrap{width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px;}
+  .bfcol .actual{width:44%;background:var(--brand);border-radius:3px 3px 0 0;}
+  .bfcol .expect{width:44%;background:#d6dee9;border-radius:3px 3px 0 0;}
+  .bfcol .lb{font-size:10px;color:var(--sub);font-weight:700;}
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--sub);}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px;}
+
+  .disc{font-size:11px;color:#8b96a5;line-height:1.7;margin-top:16px;border-top:1px solid var(--line);padding-top:12px;}
+  .foot{text-align:center;color:#7f8ea1;font-size:11.5px;margin-top:18px;line-height:1.7;}
+  a{color:var(--brand);}
+  @media print{ body{background:#fff;} .noprint{display:none!important;} .card{box-shadow:none;} }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><span style="font-size:22px">🔮</span><h1>今日午餐運勢</h1><span class="badge">每日一占</span></div>
-  <div id="screen"></div>
+
+  <div class="head">
+    <div class="kick">財審 AI · FINANCE VERIFY AGENT</div>
+    <h1>派款前財務核實系統</h1>
+    <p>提交公司資料與報表，AI Agent 會勾稽你嘅收入來源同財務報表，判斷真實性、計出一個核實分數，再建議係咪批准派發款項。</p>
+  </div>
+
+  <div class="steps">
+    <div class="s on" id="st1"><div class="dot">1</div>提交資料</div>
+    <div class="s" id="st2"><div class="dot">2</div>AI 分析</div>
+    <div class="s" id="st3"><div class="dot">3</div>核實報告</div>
+  </div>
+
+  <!-- ========== 第一步：填表 + 上傳 ========== -->
+  <div id="page1">
+    <div class="card">
+      <h2>① 公司基本資料</h2>
+      <p class="hint">呢啲資料由創業者（客戶）喺後台提交，作為核實嘅基礎。</p>
+
+      <label class="f"><span class="lb">公司名稱</span>
+        <input id="name" placeholder="例：宏發貿易有限公司" /></label>
+
+      <div class="grid2">
+        <label class="f"><span class="lb">所屬行業</span>
+          <select id="industry">
+            <option value="wholesale">批發 / 貿易</option>
+            <option value="retail">零售</option>
+            <option value="manufacturing">製造業</option>
+            <option value="fnb">餐飲</option>
+            <option value="tech">軟件 / 科技</option>
+            <option value="service">服務業</option>
+            <option value="construction">建築 / 工程</option>
+            <option value="other">其他</option>
+          </select></label>
+        <label class="f"><span class="lb">成立年份</span>
+          <input id="founded" type="number" inputmode="numeric" placeholder="2019" /></label>
+      </div>
+
+      <label class="f"><span class="lb">申請派發款項金額 <small>(港幣)</small></span>
+        <div class="suffix"><input id="apply" type="number" inputmode="numeric" placeholder="500000" /><span class="u">HKD</span></div></label>
+    </div>
+
+    <div class="card">
+      <h2>② 上傳報表 <small style="font-weight:600;color:var(--sub);font-size:12px;">（交你嘅文件喺呢度）</small></h2>
+      <p class="hint">支援 PDF / 圖片 / Excel。文件只會喺你部機讀取核對，示範版本唔會上傳到任何伺服器。</p>
+
+      <label class="drop" id="d_license">
+        <div class="ic">🪪</div>
+        <div class="tt"><b>營業執照</b><span>公司註冊證明 / 商業登記</span></div>
+        <div class="st">未上傳</div>
+        <input type="file" accept="image/*,.pdf" onchange="onFile(this,'d_license')" />
+      </label>
+
+      <label class="drop" id="d_fin">
+        <div class="ic">📊</div>
+        <div class="tt"><b>財務報表</b><span>損益表・資產負債表・現金流量表</span></div>
+        <div class="st">未上傳</div>
+        <input type="file" accept="image/*,.pdf,.xls,.xlsx,.csv" onchange="onFile(this,'d_fin')" />
+      </label>
+
+      <label class="drop" id="d_bank">
+        <div class="ic">🏦</div>
+        <div class="tt"><b>銀行流水帳</b><span>近 12 個月對帳單（可多份）</span></div>
+        <div class="st">未上傳</div>
+        <input type="file" multiple accept="image/*,.pdf,.xls,.xlsx,.csv" onchange="onFile(this,'d_bank')" />
+      </label>
+
+      <label class="drop" id="d_sales">
+        <div class="ic">🧾</div>
+        <div class="tt"><b>銷售合同 / 發票</b><span>證明收入來源（可多份）</span></div>
+        <div class="st">未上傳</div>
+        <input type="file" multiple accept="image/*,.pdf,.xls,.xlsx,.csv" onchange="onFile(this,'d_sales')" />
+      </label>
+    </div>
+
+    <div class="card">
+      <h2>③ 財務數據</h2>
+      <p class="hint">填數字（唔使打逗號），AI 會用嚟做三表勾稽、收入與流水比對等核實。唔識就撳下面「載入示範數據」。</p>
+
+      <div class="sect-t">收入與流水</div>
+      <div class="grid2">
+        <label class="f"><span class="lb">本年度銷售收入</span><div class="suffix"><input id="rev" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+        <label class="f"><span class="lb">上年度銷售收入</span><div class="suffix"><input id="revLast" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+      </div>
+      <label class="f"><span class="lb">本年度銀行流水總入帳 <small>(全年入帳現金合計)</small></span><div class="suffix"><input id="bank" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+      <label class="f"><span class="lb">最大單一客戶佔收入比例</span><div class="suffix"><input id="topcust" type="number" inputmode="numeric" placeholder="例：35"/><span class="u">%</span></div></label>
+
+      <div class="sect-t">損益表</div>
+      <div class="grid2">
+        <label class="f"><span class="lb">營業成本</span><div class="suffix"><input id="cogs" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+        <label class="f"><span class="lb">淨利潤</span><div class="suffix"><input id="np" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+      </div>
+      <label class="f"><span class="lb">本年度已繳稅費</span><div class="suffix"><input id="tax" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+
+      <div class="sect-t">現金流量表</div>
+      <label class="f"><span class="lb">經營活動現金流淨額</span><div class="suffix"><input id="ocf" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+
+      <div class="sect-t">資產負債表</div>
+      <div class="grid2">
+        <label class="f"><span class="lb">總資產</span><div class="suffix"><input id="assets" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+        <label class="f"><span class="lb">總負債</span><div class="suffix"><input id="liab" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+      </div>
+      <label class="f"><span class="lb">所有者權益</span><div class="suffix"><input id="equity" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+      <div class="grid2">
+        <label class="f"><span class="lb">本年度應收帳款</span><div class="suffix"><input id="ar" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+        <label class="f"><span class="lb">上年度應收帳款</span><div class="suffix"><input id="arLast" type="number" inputmode="numeric"/><span class="u">HKD</span></div></label>
+      </div>
+
+      <div class="row-btns noprint">
+        <button class="btn ghost mini" onclick="loadDemo()">↺ 載入示範數據</button>
+        <button class="btn ghost mini" onclick="loadFraud()">⚠ 載入「可疑」樣本</button>
+      </div>
+    </div>
+
+    <button class="btn noprint" onclick="startAnalysis()">🤖 開始 AI 核實分析</button>
+    <p class="foot noprint">分析完全喺你部機/瀏覽器內運行，唔會上傳資料。</p>
+  </div>
+
+  <!-- ========== 第二步：分析中 ========== -->
+  <div id="page2" class="hide">
+    <div class="card analyzing">
+      <div class="spin"></div>
+      <h2 style="margin-bottom:4px;">AI Agent 分析緊…</h2>
+      <p class="hint" style="margin-bottom:6px;">正逐項勾稽你嘅收入來源同財務報表</p>
+      <ul class="loglist" id="loglist"></ul>
+    </div>
+  </div>
+
+  <!-- ========== 第三步：報告 ========== -->
+  <div id="page3" class="hide">
+    <div class="card" style="padding:16px;">
+      <div class="verdict" id="verdict">
+        <div class="ring">
+          <svg width="132" height="132">
+            <circle cx="66" cy="66" r="58" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="11"/>
+            <circle id="ringArc" cx="66" cy="66" r="58" fill="none" stroke="#fff" stroke-width="11"
+              stroke-linecap="round" stroke-dasharray="364" stroke-dashoffset="364"/>
+          </svg>
+          <div class="num"><b id="scoreNum">0</b><small>核實分數 / 100</small></div>
+        </div>
+        <div class="vlabel" id="vlabel">—</div>
+        <div class="vsub" id="vsub"></div>
+        <div class="payout">
+          <div class="b"><div class="h">申請金額</div><div class="v" id="pApply">—</div></div>
+          <div class="b"><div class="h">建議派發比例</div><div class="v" id="pRatio">—</div></div>
+          <div class="b"><div class="h">建議派發金額</div><div class="v" id="pAmt">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🤖 AI Agent 綜合評語</h2>
+      <div class="aicomment">
+        <div class="hd">◆ FINANCE VERIFY AGENT</div>
+        <div id="aiComment"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>核實項目明細</h2>
+      <p class="hint">每一項都由 AI 逐條核對，透明可解釋。</p>
+      <div id="modules"></div>
+    </div>
+
+    <div class="card benford">
+      <h2>🔬 Benford 數字鑑證</h2>
+      <p class="hint">真實財務數字嘅首位數字會跟從 Benford 定律（1 最常見）。若果實際分佈同理論偏差大，代表數字可能係「砌」出嚟。此項為輔助信號。</p>
+      <div class="bfbars" id="bfbars"></div>
+      <div class="legend"><span><i style="background:var(--brand)"></i>實際</span><span><i style="background:#d6dee9"></i>Benford 理論</span></div>
+      <p class="dt" id="bfNote" style="margin-top:10px;"></p>
+    </div>
+
+    <div class="card">
+      <p class="disc">⚠️ 免責聲明：本系統為財務初步核實與風險輔助工具，分數與建議基於所提交數據以規則化財務鑑證邏輯自動計算，<b>不構成審計意見、放款承諾或法律/會計專業意見</b>。最終派款決定應由具資格人員結合實地盡職調查後作出。</p>
+      <div class="row-btns noprint">
+        <button class="btn ghost mini" onclick="window.print()">🖨 列印 / 儲存報告</button>
+        <button class="btn ghost mini" onclick="reset()">↺ 重新分析</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="foot noprint">財審 AI · 純前端示範 · 資料不離開你部裝置</p>
 </div>
 
 <script>
-const $=(s,el=document)=>el.querySelector(s);
-const screen=$('#screen');
-let restaurants=[],userPos=null;
-let filters={maxDist:Infinity,types:new Set(),cuisines:new Set()};
+/* ---------- 小工具 ---------- */
+const $ = id => document.getElementById(id);
+const num = id => { const v = parseFloat(($(id).value+'').replace(/,/g,'')); return isNaN(v)?0:v; };
+const money = n => 'HK$' + Math.round(n).toLocaleString('en-US');
+const files = { d_license:0, d_fin:0, d_bank:0, d_sales:0 };
 
-/* ---------- 每日運勢（同一日固定） ---------- */
-function daySeed(){const d=new Date();let h=2166136261;for(const c of `${d.getFullYear()}/${d.getMonth()}/${d.getDate()}`){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
-function rng(seed){let x=seed||1;return()=>{x=(Math.imul(x,1103515245)+12345)&0x7fffffff;return x/0x7fffffff;};}
-const pick=(r,a)=>a[(r()*a.length)|0];
-const LEVELS=[['大吉',5],['大吉',5],['中吉',4],['中吉',4],['小吉',3],['吉',3]];
-const YI=['嘗新店','食辣過癮','加餸唔好慳','食碗大份','約埋朋友','食返餐好嘅','試新菜式','跟住個胃口走','食熱辣辣','飯後嗌杯嘢飲'];
-const JI=['猶豫不決','諗極都諗唔到','淨係食沙律','又食返舊嗰幾間','慳到自己','邊行邊食','跳過晏晝','一個人收埋食'];
-const LUCK=['japanese','ramen','chinese','korean','thai','italian','pizza','burger','hotpot','noodle','cafe','bbq','seafood','vegetarian','dessert'];
+function onFile(inp, key){
+  const box = $(key);
+  const n = inp.files.length;
+  files[key] = n;
+  if(n>0){
+    box.classList.add('filled');
+    box.querySelector('.st').textContent = '✓ 已收到';
+    const nm = n===1 ? inp.files[0].name : (n + ' 份文件');
+    box.querySelector('.tt span').textContent = nm;
+  }
+}
 
-/* ---------- 菜式對照 ---------- */
-const CU={
-  chinese:['中餐','🥢','chinese food'],cantonese:['廣東菜','🥡','dim sum'],dim_sum:['點心','🥟','dim sum'],
-  japanese:['日本菜','🍣','sushi'],sushi:['壽司','🍣','sushi'],ramen:['拉麵','🍜','ramen'],
-  korean:['韓式','🍲','korean food'],thai:['泰式','🍛','thai food'],italian:['意式','🍝','pasta'],
-  pizza:['薄餅','🍕','pizza'],burger:['漢堡','🍔','burger'],american:['美式','🍔','burger'],
-  french:['法式','🥐','french food'],vietnamese:['越式','🍜','pho'],indian:['印度菜','🍛','curry'],
-  noodle:['麵食','🍜','noodles'],dumpling:['餃子','🥟','dumplings'],seafood:['海鮮','🦐','seafood'],
-  vegetarian:['素食','🥗','salad'],dessert:['甜品','🍰','dessert'],ice_cream:['雪糕','🍦','ice cream'],
-  bakery:['麵包','🥖','bakery'],bbq:['燒烤','🍖','barbecue'],hotpot:['火鍋','🍲','hotpot'],
-  coffee_shop:['咖啡','☕','coffee'],cafe:['咖啡','☕','coffee'],breakfast:['早餐','🍳','breakfast'],
-  chicken:['炸雞','🍗','fried chicken'],sandwich:['三文治','🥪','sandwich'],steak_house:['扒房','🥩','steak'],
+/* 行業毛利率合理區間（示範基準） */
+const GM = {
+  wholesale:[.05,.22], retail:[.15,.42], manufacturing:[.15,.38], fnb:[.40,.68],
+  tech:[.50,.88], service:[.30,.62], construction:[.08,.28], other:[.08,.62]
 };
-const TYPE={restaurant:['🍽️ 餐廳','food'],fast_food:['🍔 快餐','fast food'],cafe:['☕ 咖啡店','coffee']};
-const emojiFor=r=>{for(const t of r.cuisines)if(CU[t])return CU[t][1];return r.type==='cafe'?'☕':r.type==='fast_food'?'🍟':'🍽️';};
-const photoKw=r=>{for(const t of r.cuisines)if(CU[t])return CU[t][2];return(TYPE[r.type]||['','food'])[1];};
 
-function haversine(la1,lo1,la2,lo2){const R=6371000,r=x=>x*Math.PI/180;const dLa=r(la2-la1),dLo=r(lo2-lo1);
-  const a=Math.sin(dLa/2)**2+Math.cos(r(la1))*Math.cos(r(la2))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(a));}
-const walkMin=m=>Math.max(1,Math.round(m/80));
-const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
-
-let todayLuck=null;
-function fortune(){
-  const r=rng(daySeed());
-  const [lvl,stars]=pick(r,LEVELS);
-  const yi=[...new Set([pick(r,YI),pick(r,YI)])];
-  const ji=pick(r,JI);
-  const luck=pick(r,LUCK); todayLuck=luck;
-  return {lvl,stars,yi,ji,luck};
+/* ---------- 示範數據 ---------- */
+function fill(o){ for(const k in o) if($(k)) $(k).value = o[k]; }
+function loadDemo(){
+  $('name').value='宏發貿易有限公司'; $('industry').value='wholesale'; $('founded').value='2018';
+  fill({apply:500000, rev:8200000, revLast:6900000, bank:9100000, topcust:28, cogs:6560000,
+    np:820000, tax:190000, ocf:760000, assets:5400000, liab:2200000, equity:3200000,
+    ar:980000, arLast:820000});
+  toast('已載入健康公司示範數據');
+}
+function loadFraud(){
+  $('name').value='雲端速富科技'; $('industry').value='tech'; $('founded').value='2023';
+  fill({apply:800000, rev:12000000, revLast:2000000, bank:1800000, topcust:82, cogs:600000,
+    np:5200000, tax:15000, ocf:180000, assets:8000000, liab:1000000, equity:4200000,
+    ar:9500000, arLast:900000});
+  toast('已載入高風險 / 疑似造假樣本');
+}
+function toast(t){
+  const el=document.createElement('div');el.textContent=t;
+  el.style.cssText='position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#17202b;color:#fff;padding:11px 18px;border-radius:99px;font-size:13px;font-weight:700;z-index:99;box-shadow:0 8px 20px rgba(0,0,0,.25)';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),1900);
 }
 
-/* ---------- 開始畫面：運勢卡 ---------- */
-function renderStart(){
-  const f=fortune();
-  screen.innerHTML=`
-    <div class="fortune pop">
-      <div class="lvl">今日午餐運勢<b>${f.lvl}</b><div class="stars">${'★'.repeat(f.stars)}${'☆'.repeat(5-f.stars)}</div></div>
-      <div class="yj">
-        <div class="box yi"><div class="h">宜 ✓</div><div class="v">${f.yi.join('<br>')}</div></div>
-        <div class="box ji"><div class="h">忌 ✕</div><div class="v">${f.ji}</div></div>
+/* ---------- 核心分析引擎 ---------- */
+function analyze(){
+  const rev=num('rev'), revLast=num('revLast'), bank=num('bank'), topcust=num('topcust'),
+        cogs=num('cogs'), np=num('np'), tax=num('tax'), ocf=num('ocf'),
+        assets=num('assets'), liab=num('liab'), equity=num('equity'),
+        ar=num('ar'), arLast=num('arLast');
+  const ind = $('industry').value;
+  const mods = [];
+  const insuff = '（資料不足，此項未能完整核實，先給中性分。）';
+
+  /* A. 文件完整性 / 20 */
+  {
+    let got=0; const miss=[];
+    const map={d_license:'營業執照',d_fin:'財務報表',d_bank:'銀行流水帳',d_sales:'銷售合同/發票'};
+    for(const k in map){ if(files[k]>0) got+=5; else miss.push(map[k]); }
+    mods.push({t:'文件完整性', w:20, got,
+      status: got>=20?'pass':got>=10?'warn':'fail',
+      dt: got>=20 ? '四類必要文件齊全，具備核實基礎。'
+        : ('尚欠：'+miss.join('、')+'。缺文件會削弱可核實度，建議補交。')});
+  }
+
+  /* B. 三表勾稽 / 25 */
+  {
+    // B1 資產負債表平衡 12
+    let g1=0,s1,d1;
+    if(assets>0 && (liab+equity)>0){
+      const diff=Math.abs(assets-(liab+equity))/assets;
+      if(diff<=0.005){g1=12;s1='pass';d1='資產 = 負債 + 權益，資產負債表平衡（誤差 '+(diff*100).toFixed(1)+'%）。';}
+      else if(diff<=0.03){g1=7;s1='warn';d1='資產負債表輕微不平（誤差 '+(diff*100).toFixed(1)+'%），建議核對分類。';}
+      else{g1=0;s1='fail';d1='資產('+money(assets)+') ≠ 負債+權益('+money(liab+equity)+')，誤差 '+(diff*100).toFixed(1)+'%，報表恆等式不成立，真實性存疑。';}
+    } else {g1=6;s1='warn';d1='資產負債表數據不齊，'+insuff;}
+
+    // B2 淨利潤 vs 經營現金流 13
+    let g2=0,s2,d2;
+    if(np>0){
+      const r=ocf/np;
+      if(r>=0.8){g2=13;s2='pass';d2='經營現金流 / 淨利潤 = '+r.toFixed(2)+'，盈利有真實現金支撐，質量良好。';}
+      else if(r>=0.4){g2=8;s2='warn';d2='經營現金流 / 淨利潤 = '+r.toFixed(2)+'，利潤現金含量偏低，留意應收/存貨佔用。';}
+      else{g2=2;s2='fail';d2='經營現金流 / 淨利潤 = '+r.toFixed(2)+'，帳面高利潤但收唔到現金，疑似虛增收入或利潤。';}
+    } else {g2=7;s2='warn';d2='淨利潤非正數，改由現金流角度觀察；'+insuff;}
+
+    mods.push({t:'三表勾稽一致性', w:25, got:g1+g2,
+      status:(g1+g2)>=22?'pass':(g1+g2)>=13?'warn':'fail',
+      dt:d1+' ｜ '+d2});
+  }
+
+  /* C. 收入真實性 / 25 */
+  {
+    // C1 收入 vs 流水 10
+    let g1=0,s1,d1;
+    if(rev>0 && bank>0){
+      const r=bank/rev;
+      if(r>=0.7 && r<=1.5){g1=10;s1='pass';d1='銀行流水 / 收入 = '+r.toFixed(2)+'，流水與收入匹配，收入有真金白銀支撐。';}
+      else if((r>=0.4&&r<0.7)||(r>1.5&&r<=2.5)){g1=5;s1='warn';d1='銀行流水 / 收入 = '+r.toFixed(2)+'，兩者有落差，需解釋（賒帳、預收或代收代付）。';}
+      else{g1=1;s1='fail';d1='銀行流水 / 收入 = '+r.toFixed(2)+'，嚴重不符 — '+(r<0.4?'收入遠多過實際入帳，疑似虛報收入。':'流水遠多過收入，疑似資金空轉/過帳洗單。');}
+    } else {g1=5;s1='warn';d1='收入或流水缺失，'+insuff;}
+
+    // C2 應收帳款增速 vs 收入增速 8
+    let g2=0,s2,d2;
+    if(revLast>0 && arLast>0){
+      const rg=(rev-revLast)/revLast, ag=(ar-arLast)/arLast, gap=ag-rg;
+      if(gap<=0.10){g2=8;s2='pass';d2='收入增速 '+(rg*100).toFixed(0)+'%、應收增速 '+(ag*100).toFixed(0)+'%，回款節奏正常。';}
+      else if(gap<=0.30){g2=4;s2='warn';d2='應收帳款增速('+(ag*100).toFixed(0)+'%)快過收入('+(rg*100).toFixed(0)+'%)，回款轉弱，留意壞帳。';}
+      else{g2=1;s2='fail';d2='應收帳款增速('+(ag*100).toFixed(0)+'%)遠超收入('+(rg*100).toFixed(0)+'%)，收入或靠賒帳/虛開發票撐起。';}
+    } else {g2=4;s2='warn';d2='缺上年度對比數據，'+insuff;}
+
+    // C3 毛利率合理性 7
+    let g3=0,s3,d3;
+    if(rev>0){
+      const gm=(rev-cogs)/rev, [lo,hi]=GM[ind]||GM.other;
+      if(gm>=lo && gm<=hi){g3=7;s3='pass';d3='毛利率 '+(gm*100).toFixed(0)+'%，落喺行業合理區間（'+(lo*100)+'–'+(hi*100)+'%）。';}
+      else if(gm>=lo-0.1 && gm<=hi+0.1){g3=4;s3='warn';d3='毛利率 '+(gm*100).toFixed(0)+'%，稍偏離行業區間（'+(lo*100)+'–'+(hi*100)+'%）。';}
+      else{g3=1;s3='fail';d3='毛利率 '+(gm*100).toFixed(0)+'%，明顯偏離行業區間（'+(lo*100)+'–'+(hi*100)+'%）'+(gm>hi?'，異常高毛利，疑似虛增收入或漏報成本。':'，長期低於同業，經營或數據存疑。');}
+    } else {g3=3;s3='warn';d3='缺收入數據，'+insuff;}
+
+    mods.push({t:'收入真實性', w:25, got:g1+g2+g3,
+      status:(g1+g2+g3)>=22?'pass':(g1+g2+g3)>=13?'warn':'fail',
+      dt:d1+' ｜ '+d2+' ｜ '+d3});
+  }
+
+  /* D. 收入來源健康度（客戶集中度）/ 15 */
+  {
+    let got=0,s,d;
+    if(topcust>0){
+      if(topcust<=30){got=15;s='pass';d='最大客戶佔比 '+topcust+'%，收入來源分散，抗風險能力強。';}
+      else if(topcust<=50){got=10;s='warn';d='最大客戶佔比 '+topcust+'%，中度集中，需留意大客戶流失風險。';}
+      else if(topcust<=70){got=5;s='warn';d='最大客戶佔比 '+topcust+'%，高度集中，收入穩定性偏弱。';}
+      else{got=2;s='fail';d='最大客戶佔比 '+topcust+'%，極度依賴單一客戶，一旦流失收入即崩，且關聯交易造假風險高。';}
+    } else {got=8;s='warn';d='未提供客戶集中度，'+insuff;}
+    mods.push({t:'收入來源健康度', w:15, got, status:s, dt:d});
+  }
+
+  /* E. 稅務合理性 / 15 */
+  {
+    let got=0,s,d;
+    if(rev>0){
+      const tr=tax/rev;
+      if(tr>=0.02){got=15;s='pass';d='綜合稅負率 '+(tr*100).toFixed(1)+'%，與經營規模相稱，收入多有開票入帳。';}
+      else if(tr>=0.005){got=8;s='warn';d='綜合稅負率 '+(tr*100).toFixed(1)+'%，偏低，部分收入或未足額開票。';}
+      else{got=2;s='fail';d='綜合稅負率 '+(tr*100).toFixed(2)+'%，極低 — 高收入低繳稅，收入真實性/合規性存疑。';}
+    } else {got=8;s='warn';d='缺收入數據，'+insuff;}
+    mods.push({t:'稅務合理性', w:15, got, status:s, dt:d});
+  }
+
+  const total = Math.round(mods.reduce((a,m)=>a+m.got,0));
+  return { mods, total, benford: benford([rev,revLast,bank,cogs,np,tax,ocf,assets,liab,equity,ar,arLast,num('apply')]) };
+}
+
+/* Benford 首位數字分佈 */
+function benford(arr){
+  const exp=[0,30.1,17.6,12.5,9.7,7.9,6.7,5.8,5.1,4.6]; // index 1..9 (%)
+  const cnt=[0,0,0,0,0,0,0,0,0,0]; let tot=0;
+  arr.forEach(v=>{ v=Math.abs(v); if(v>=1){ const d=+String(Math.floor(v))[0]; if(d>=1&&d<=9){cnt[d]++;tot++;} }});
+  const act=[0]; let dev=0;
+  for(let i=1;i<=9;i++){ const p=tot? cnt[i]/tot*100 : 0; act.push(p); dev+=Math.abs(p-exp[i]); }
+  return {exp, act, tot, dev};
+}
+
+/* ---------- 流程控制 ---------- */
+let RESULT=null;
+const STEPS=['讀取並校驗提交文件…','勾稽三大財務報表恆等式…','比對收入與銀行流水…','分析應收帳款與收入增速…','評估客戶集中度與稅務合規…','運行 Benford 數字鑑證…','綜合評分並生成派款決策…'];
+
+function startAnalysis(){
+  if(!$('name').value.trim()){ toast('請先填公司名稱'); return; }
+  RESULT = analyze();
+  $('page1').classList.add('hide');
+  $('page2').classList.remove('hide');
+  $('st1').classList.replace('on','done'); $('st2').classList.add('on');
+  window.scrollTo(0,0);
+
+  const ul=$('loglist'); ul.innerHTML='';
+  STEPS.forEach(s=>{ const li=document.createElement('li');
+    li.innerHTML='<span class="tick">•</span>'+s; ul.appendChild(li); });
+  const lis=[...ul.children]; let i=0;
+  const tick=()=>{
+    if(i>0){ lis[i-1].classList.remove('act'); lis[i-1].classList.add('fin'); lis[i-1].querySelector('.tick').textContent='✓'; }
+    if(i<lis.length){ lis[i].classList.add('act'); i++; setTimeout(tick, 380+Math.random()*220); }
+    else { setTimeout(showReport, 420); }
+  };
+  tick();
+}
+
+function showReport(){
+  $('page2').classList.add('hide');
+  $('page3').classList.remove('hide');
+  $('st2').classList.replace('on','done'); $('st3').classList.add('on');
+  window.scrollTo(0,0);
+  render(RESULT);
+}
+
+function render(R){
+  const total=R.total;
+  let cls,label,sub,ratio;
+  if(total>=80){cls='ok';label='✓ 批准派發';sub='財務與收入來源核實通過，真實性高，風險可控。建議按申請金額派發。';ratio=1;}
+  else if(total>=65){cls='warn';label='◐ 有條件批准 · 需人工覆核';sub='整體可信但存在若干疑點，建議補件並經人工盡職調查後，先行部分派發。';ratio=0.5;}
+  else{cls='bad';label='✕ 暫不批准派發';sub='多項核實未過關，收入或財務報表真實性存疑，風險偏高，建議退回補件或實地核查。';ratio=0;}
+
+  const v=$('verdict'); v.className='verdict '+cls;
+  $('vlabel').textContent=label; $('vsub').textContent=sub;
+  const apply=num('apply');
+  $('pApply').textContent = apply? money(apply):'—';
+  $('pRatio').textContent = (ratio*100)+'%';
+  $('pAmt').textContent = apply? money(apply*ratio):'—';
+
+  // 分數環動畫
+  $('scoreNum').textContent='0';
+  const arc=$('ringArc'), C=364;
+  let cur=0; const step=()=>{ cur+=Math.max(1,Math.round((total-cur)/6));
+    if(cur>=total)cur=total; $('scoreNum').textContent=cur;
+    arc.style.strokeDashoffset = C - C*cur/100;
+    if(cur<total) requestAnimationFrame(step); };
+  setTimeout(step,150);
+
+  // 模組明細
+  const col=s=>s==='pass'?'var(--ok)':s==='warn'?'var(--warn)':'var(--bad)';
+  const zh=s=>s==='pass'?'通過':s==='warn'?'注意':'警示';
+  $('modules').innerHTML = R.mods.map(m=>`
+    <div class="modu">
+      <div class="top">
+        <div class="t">${m.t}</div>
+        <div class="sc">${m.got}/${m.w}</div>
+        <div class="pill ${m.status}">${zh(m.status)}</div>
       </div>
-      <div class="lucky">🍀 今日幸運菜式：<b>${CU[f.luck][1]} ${CU[f.luck][0]}</b></div>
-    </div>
-    <button class="btn big" id="go">🎲 揭曉今日天選午餐</button>
-    <div class="share-tip">撳一下，幫你喺附近抽一間出嚟</div>
-    <div id="msg"></div>`;
-  $('#go').onclick=locate;
+      <div class="bar"><i style="width:${Math.round(m.got/m.w*100)}%;background:${col(m.status)}"></i></div>
+      <p class="dt">${m.dt}</p>
+    </div>`).join('');
+
+  // AI 評語
+  $('aiComment').innerHTML = comment(R, total, cls);
+
+  // Benford
+  renderBenford(R.benford);
 }
 
-function locate(){
-  if(!navigator.geolocation){screen.innerHTML=`<div class="err">你部裝置唔支援定位 😢</div>`;return;}
-  screen.innerHTML=`<div class="hint"><div class="spinner"></div>緊係攞緊你嘅位置…<br><span style="font-size:12px">（瀏覽器問准許就撳「允許」）</span></div>`;
-  navigator.geolocation.getCurrentPosition(
-    p=>{userPos={lat:p.coords.latitude,lon:p.coords.longitude};fetchRestaurants(1200);},
-    e=>{screen.innerHTML=`<div class="err">${e.code===1?'你拒絕咗定位權限，請喺瀏覽器設定允許位置再試。':'攞唔到位置，請再試一次。'}</div>`;
-      const b=document.createElement('button');b.className='btn ghost';b.textContent='🔄 重試';b.style.marginTop='14px';b.onclick=renderStart;screen.appendChild(b);},
-    {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+function comment(R, total, cls){
+  const name=$('name').value.trim()||'該公司';
+  const fails=R.mods.filter(m=>m.status==='fail');
+  const warns=R.mods.filter(m=>m.status==='warn');
+  let p1 = `我（財審 AI Agent）已就 <b>${name}</b> 提交嘅文件與財務數據完成七項核實，綜合核實分數為 <b>${total}/100</b>。`;
+  let p2;
+  if(cls==='ok'){
+    p2 = warns.length
+      ? `整體真實性可信，資產負債表勾稽、收入與流水匹配等關鍵指標正常。僅「${warns.map(w=>w.t).join('、')}」屬輕微注意項，不影響派款結論。`
+      : `全部核實項目通過，收入來源清晰、三表勾稽一致、稅負相稱，未發現造假跡象。`;
+    p2 += ' 建議：<b>可批准並按申請金額派發</b>，並保留季度覆核。';
+  } else if(cls==='warn'){
+    p2 = `發現需留意之處：${(fails.concat(warns)).map(m=>m.t).join('、')}。呢啲屬於「可解釋但需佐證」嘅疑點，未至於直接否決。`;
+    p2 += ' 建議：<b>先派發 50%</b>，要求補交相關佐證（銀行流水明細、大客戶合同、完稅證明），經人工覆核後再放餘款。';
+  } else {
+    p2 = `核實未過關，重點警示：<b>${(fails.length?fails:warns).map(m=>m.t).join('、')}</b>。`;
+    p2 += cls==='bad' ? ` 呢啲組合（如帳面高利潤但無現金流、流水遠低於收入、應收暴增、稅負極低）係財務造假嘅典型信號。建議：<b>暫不派款</b>，退回補件並安排實地盡職調查。` : '';
+  }
+  return `<p style="margin:0 0 8px">${p1}</p><p style="margin:0">${p2}</p>`;
 }
 
-async function fetchRestaurants(radius){
-  let sec=0;const t=setInterval(()=>{sec++;const el=$('#lh');if(el&&sec>8)el.innerHTML='搵緊餐廳…伺服器有少少慢，再等等 🙏';},1000);
-  screen.innerHTML=`<div class="hint"><div class="spinner"></div><span id="lh">緊係搵緊你身邊嘅餐廳…</span></div>`;
-  const q=`[out:json][timeout:25];(
-    node["amenity"~"^(restaurant|fast_food|cafe)$"](around:${radius},${userPos.lat},${userPos.lon});
-    way["amenity"~"^(restaurant|fast_food|cafe)$"](around:${radius},${userPos.lat},${userPos.lon});
-  );out center tags;`;
-  const eps=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
-  let data=null,err=null;
-  for(const url of eps){try{const c=new AbortController();const tm=setTimeout(()=>c.abort(),12000);
-    const res=await fetch(url,{method:'POST',body:'data='+encodeURIComponent(q),signal:c.signal});clearTimeout(tm);
-    if(!res.ok)throw new Error('HTTP '+res.status);data=await res.json();break;}catch(e){err=e;}}
-  clearInterval(t);
-  if(!data){screen.innerHTML=`<div class="err">⚠️ 搵唔到餐廳資料，可能網絡慢或伺服器繁忙，撳下面重試。</div>`;
-    const b=document.createElement('button');b.className='btn';b.textContent='🔄 重試';b.style.marginTop='14px';b.onclick=()=>fetchRestaurants(radius);screen.appendChild(b);return;}
-  const seen=new Set();
-  restaurants=data.elements.map(el=>{const tg=el.tags||{},lat=el.lat??el.center?.lat,lon=el.lon??el.center?.lon;
-    if(!tg.name||lat==null)return null;
-    return{name:tg.name,lat,lon,type:tg.amenity,cuisines:(tg.cuisine||'').split(';').map(s=>s.trim()).filter(Boolean),
-      dist:haversine(userPos.lat,userPos.lon,lat,lon),website:tg.website||tg['contact:website']||'',phone:tg.phone||tg['contact:phone']||'',hours:tg.opening_hours||''};
-  }).filter(Boolean).filter(r=>{if(seen.has(r.name))return false;seen.add(r.name);return true;}).sort((a,b)=>a.dist-b.dist);
-  if(!restaurants.length){screen.innerHTML=`<div class="err">呢頭搵唔到有名嘅餐廳 😅 試下擴大範圍。</div>`;
-    const b=document.createElement('button');b.className='btn';b.textContent='🔍 擴大到 3km';b.style.marginTop='14px';b.onclick=()=>fetchRestaurants(3000);screen.appendChild(b);return;}
-  filters={maxDist:Infinity,types:new Set(),cuisines:new Set()};
-  renderFunnel();
+function renderBenford(bf){
+  const wrap=$('bfbars'); wrap.innerHTML='';
+  const maxv=Math.max(...bf.exp.slice(1), ...bf.act.slice(1), 1);
+  for(let d=1; d<=9; d++){
+    const a=bf.act[d], e=bf.exp[d];
+    const col=document.createElement('div'); col.className='bfcol';
+    col.innerHTML=`<div class="bwrap">
+        <div class="actual" style="height:${a/maxv*100}%"></div>
+        <div class="expect" style="height:${e/maxv*100}%"></div>
+      </div><div class="lb">${d}</div>`;
+    wrap.appendChild(col);
+  }
+  let verdict;
+  if(bf.tot<25) verdict='現有樣本 '+bf.tot+' 個數字。Benford 定律需大量明細數據（如逐筆交易/發票）先具統計效力，此處僅示意首位數字分佈，未作真偽判定。上傳明細帳後可提升準確度。';
+  else if(bf.dev<40) verdict='總偏差 '+bf.dev.toFixed(0)+'，接近 Benford 理論分佈，數字自然度良好。';
+  else if(bf.dev<75) verdict='總偏差 '+bf.dev.toFixed(0)+'，與理論分佈中度偏離，建議留意。';
+  else verdict='總偏差 '+bf.dev.toFixed(0)+'，明顯偏離 Benford 分佈，數字有人為湊整/編造嘅可能。';
+  $('bfNote').textContent=verdict;
 }
 
-const applyFilters=()=>restaurants.filter(r=>r.dist<=filters.maxDist&&
-  (filters.types.size===0||filters.types.has(r.type))&&
-  (filters.cuisines.size===0||r.cuisines.some(c=>filters.cuisines.has(c))));
-
-function renderFunnel(){
-  const freq={};restaurants.forEach(r=>r.cuisines.forEach(c=>{if(CU[c])freq[c]=(freq[c]||0)+1;}));
-  const topCu=Object.keys(freq).sort((a,b)=>freq[b]-freq[a]).slice(0,10);
-  const typeSet=new Set(restaurants.map(r=>r.type));
-  const luckAvail=topCu.includes(todayLuck);
-  screen.innerHTML=`
-    ${luckAvail?`<button class="btn" id="luck" style="margin-bottom:14px;background:linear-gradient(135deg,#f0c14b,#e8b007)">🍀 跟今日運勢抽（${CU[todayLuck][0]}）</button>`:''}
-    <div class="card">
-      <div class="sect">🚶 想行幾遠？</div>
-      <div class="chips" id="dist">
-        <div class="chip" data-d="400">5 分鐘內</div>
-        <div class="chip" data-d="800">10 分鐘內</div>
-        <div class="chip on" data-d="Infinity">唔限</div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:14px">
-      <div class="sect">🍽️ 邊種？ <span>（唔揀＝全部）</span></div>
-      <div class="chips" id="types">${[...typeSet].map(t=>`<div class="chip" data-t="${t}">${TYPE[t][0]}</div>`).join('')}</div>
-    </div>
-    ${topCu.length?`<div class="card" style="margin-top:14px">
-      <div class="sect">😋 想食啲乜？ <span>（可多選）</span></div>
-      <div class="chips" id="cu">${topCu.map(c=>`<div class="chip${c===todayLuck?'':''}" data-c="${c}">${CU[c][1]} ${CU[c][0]}</div>`).join('')}</div>
-    </div>`:''}
-    <div class="cnt">啱條件嘅有 <b id="cnt">0</b> 間</div>`;
-  const upd=()=>{const n=applyFilters().length;$('#cnt').textContent=n;const b=$('#spin');if(b){b.disabled=n<1;b.textContent=n<1?'😅 冇啱嘅，放寬條件啦':`🎰 開始抽！（${n} 間）`;}};
-  $('#dist').onclick=e=>{const c=e.target.closest('.chip');if(!c)return;[...$('#dist').children].forEach(x=>x.classList.remove('on'));c.classList.add('on');filters.maxDist=c.dataset.d==='Infinity'?Infinity:+c.dataset.d;upd();};
-  const multi=(w,k,a)=>{const el=$(w);if(!el)return;el.onclick=e=>{const c=e.target.closest('.chip');if(!c)return;c.classList.toggle('on');const v=c.dataset[a];filters[k].has(v)?filters[k].delete(v):filters[k].add(v);upd();};};
-  multi('#types','types','t');multi('#cu','cuisines','c');
-  if(luckAvail)$('#luck').onclick=()=>{const pool=restaurants.filter(r=>r.cuisines.includes(todayLuck));if(pool.length){$('.sticky')?.remove();runSlot(pool);}};
-  const old=$('.sticky');if(old)old.remove();
-  const bar=document.createElement('div');bar.className='sticky';
-  bar.innerHTML=`<div class="inner"><button class="btn" id="spin">🎰 開始抽！</button></div>`;
-  document.body.appendChild(bar);
-  $('#spin').onclick=()=>{const pool=applyFilters();if(pool.length<1)return;bar.remove();runSlot(pool);};
-  upd();
+function reset(){
+  $('page3').classList.add('hide'); $('page1').classList.remove('hide');
+  $('st3').classList.remove('on'); $('st2').className='s'; $('st1').className='s on';
+  window.scrollTo(0,0);
 }
-
-function runSlot(pool){
-  $('.sticky')?.remove();
-  screen.innerHTML=`<div class="reveal-t">✨ 天機運轉中… ✨</div>
-    <div class="rcard pop" id="rc"><div class="photo"><div class="emoji" id="pe">🍽️</div></div>
-    <div class="body"><div class="rname" id="pn">…</div><div class="tags" id="pt"></div></div></div>`;
-  const pe=$('#pe'),pn=$('#pn'),pt=$('#pt'),rc=$('#rc');
-  const order=shuffle([...pool]);let i=0,delay=60,total=0;const target=1500+Math.random()*400;
-  (function tick(){const r=order[i%order.length];i++;
-    pe.textContent=emojiFor(r);pn.textContent=r.name;pt.innerHTML=`<span class="tag dist">🚶 約 ${walkMin(r.dist)} 分鐘</span>`;
-    rc.classList.remove('flashing');void rc.offsetWidth;rc.classList.add('flashing');
-    total+=delay;
-    if(total<target){if(total>target*0.6)delay*=1.18;setTimeout(tick,delay);}
-    else{confetti();showResult(order[(i-1)%order.length],pool);}
-  })();
-}
-
-function showResult(r,pool){
-  const kw=encodeURIComponent(photoKw(r));
-  const tags=[`<span class="tag dist">🚶 約 ${walkMin(r.dist)} 分鐘</span>`,
-    `<span class="tag">${TYPE[r.type][0]}</span>`,
-    ...r.cuisines.filter(c=>CU[c]).slice(0,3).map(c=>`<span class="tag">${CU[c][1]} ${CU[c][0]}</span>`)].join('');
-  let extra='';if(r.hours)extra+=`🕒 ${r.hours}<br>`;if(r.phone)extra+=`📞 <a href="tel:${r.phone}">${r.phone}</a><br>`;if(r.website)extra+=`🔗 <a href="${r.website}" target="_blank">餐廳網站</a>`;
-  screen.innerHTML=`
-    <div class="reveal-t">🎉 天選午餐就係佢！</div>
-    <div class="rcard pop"><div class="photo"><div class="emoji">${emojiFor(r)}</div><img id="ph" alt=""></div>
-      <div class="body"><div class="rname">${r.name}</div><div class="tags">${tags}</div>${extra?`<div class="extra">${extra}</div>`:''}</div></div>
-    <div class="actions">
-      <button class="btn ghost" id="again">🔁 換一間</button>
-      <a href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}" target="_blank" style="text-decoration:none"><button class="btn" style="width:100%">🗺️ 去導航</button></a>
-      <button class="btn ghost full" id="reset">⚙️ 改返條件</button>
-    </div>
-    <div class="share-tip">📸 截圖分享俾朋友，睇下佢哋今日抽到乜</div>`;
-  const img=$('#ph');img.onload=()=>img.classList.add('show');img.onerror=()=>{};
-  img.src=`https://loremflickr.com/600/400/${kw},food?lock=${(Math.random()*1000)|0}`;
-  $('#again').onclick=()=>{confetti(8);showResult(pool[(Math.random()*pool.length)|0],pool);};
-  $('#reset').onclick=renderFunnel;
-}
-
-function confetti(n=30){const c=document.createElement('div');c.className='confetti';
-  const ico=['🎉','🍜','🍣','🍔','🍕','🥟','✨','🍱','🍀'];
-  for(let i=0;i<n;i++){const s=document.createElement('i');s.textContent=ico[(Math.random()*ico.length)|0];
-    s.style.left=Math.random()*100+'%';s.style.animationDuration=(1.2+Math.random()*1.2)+'s';s.style.animationDelay=(Math.random()*.3)+'s';c.appendChild(s);}
-  document.body.appendChild(c);setTimeout(()=>c.remove(),2600);}
-
-renderStart();
 </script>
 </body>
 </html>
